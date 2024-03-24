@@ -18,6 +18,7 @@ export const CatalogStoreContext = createContext(null);
 export const InfoUserBlocksStoreContext = createContext(null);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
 root.render(
   <UserStoreContext.Provider value={new UserStore()}>
     <DeviceStoreContext.Provider value={new DeviceStore()}>

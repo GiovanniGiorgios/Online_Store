@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LOGIN_ROUTE, REGISTRATION_ROUTE, MAIN_ROUTE } from "../utils/consts";
 import { useLocation } from "react-router-dom"; // дозволяє отримати маршрут в запросе
-import { registration, login } from "../http/userApi";
+// import { registration, login } from "../http/userApi";
 import { observer } from "mobx-react-lite";
 import { UserStoreContext } from "..";
 
@@ -17,20 +17,21 @@ const Auth = observer(() => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
+
     const authClick = async () => {
-        try{
-            let data;
-            if(isLogin){
-                data = await login(email, password)
-            } else{
-                data = await registration(email, password)
-            }
-            user.setUser(user)
-            user.setIsAuth(true)
-            navigate(MAIN_ROUTE)
-        }catch(err){
-            alert(err.response.data.message)
-        }
+        // try{
+        //     let data;
+        //     if(isLogin){
+        //         data = await login(email, password)
+        //     } else{
+        //         data = await registration(email, password)
+        //     }
+        //     user.setUser(user)
+        //     user.setIsAuth(true)
+        //     navigate(MAIN_ROUTE)
+        // }catch(err){
+        //     alert(err.response.data.message)
+        // }
     }
 
     return (

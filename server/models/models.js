@@ -9,12 +9,13 @@ const {DataTypes} = require("sequelize")
 // USER
 const User = sequelize.define("user", {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    uid: {type: DataTypes.STRING, allowNull: false},
     email: {type: DataTypes.STRING, unique: true, allowNull: false},
-    password: {type: DataTypes.STRING, allowNull: false},
+    emailVerified: { type: DataTypes.BOOLEAN },
     role: {type: DataTypes.STRING, defaultValue: "USER", allowNull: false},
-    firstName: {type: DataTypes.STRING},
-    lastName: {type: DataTypes.STRING},
-    birthDate: {type: DataTypes.DATE},
+    displayName: {type: DataTypes.STRING},
+    // birthDate: {type: DataTypes.DATE},
+    // photoURL: { type: String }, // URL фото користувача
     phoneNumber: {type: DataTypes.INTEGER},
 })
 

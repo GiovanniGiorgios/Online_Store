@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -26,7 +26,9 @@ import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import { ColorModeContext } from '../../theme';
 import { useTheme } from '@emotion/react';
+
 import { LOGIN_ROUTE } from '../../utils/consts';
+import AuthPopup from '../Popups/AuthPopup/AuthPopup';
 
 
 const Search = styled('div')(({ theme }) => ({
@@ -79,10 +81,13 @@ export default function PrimarySearchAppBar() {
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
   const isMenuOpen = Boolean(anchorEl);
+
+  const [isAuthPopupOpen, setIsAuthPopupOpen] = useState(false);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
   const handleProfileMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
+    // setAnchorEl(event.currentTarget);
+    setIsAuthPopupOpen(true);
   };
 
   const handleMobileMenuClose = () => {
@@ -98,26 +103,31 @@ export default function PrimarySearchAppBar() {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
+  const handleAuthPopupClose = () => {
+    setIsAuthPopupOpen(false);
+  };
+
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose} component={Link} to={LOGIN_ROUTE} >My account</MenuItem>
-    </Menu>
+    // <Menu
+    //   anchorEl={anchorEl}
+    //   anchorOrigin={{
+    //     vertical: 'top',
+    //     horizontal: 'right',
+    //   }}
+    //   id={menuId}
+    //   keepMounted
+    //   transformOrigin={{
+    //     vertical: 'top',
+    //     horizontal: 'right',
+    //   }}
+    //   open={isMenuOpen}
+    //   onClose={handleMenuClose}
+    // >
+    //   <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+    //   <MenuItem onClick={handleMenuClose} component={Link} to={LOGIN_ROUTE} >My account</MenuItem>
+    // </Menu>
+    <AuthPopup open={isAuthPopupOpen} setOpen={handleAuthPopupClose} />
   );
 
   const mobileMenuId = 'primary-search-account-menu-mobile';

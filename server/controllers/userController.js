@@ -14,37 +14,39 @@ const generateJwt = (id, email, role) => {
 }
 
 class UserController {
-    async registration(req, res){
-        const {email, password, role} = req.body
+    async getOrsaveNewUserInDatabase(req, res){
+        const {email, uid} = req.body
 
-        if(!email || !password){
-            return next(ApiError.badRequest('Bad email or password'))
+        if(!email || !uid){
+            return next(ApiError.badRequest('Bad email or uid'))
         }
-        // перевірка чи існує користувач з таким email
-        const candidate = await User.findOne({where: {email}})
-        if(candidate){
-            return next(ApiError.badRequest('Користувач з таким email уже є!'))
+
+        const currentUser = await User.findOne({where: {uid}})
+        if(currentUser){
+            return res.json({ user: currentUser })
         }
-        const hashPassword = await bcrypt.hash(password, 5) // 5 - склькі разів хешировать
-        const user = await User.create({email, role, password: hashPassword})
+
+        const newUser = await User.create({email, role: "ADMIN", uid})
 
         // const basket = await Basket.create({userId: user.id})
-        const token = generateJwt(user.id, user.email, user.role); 
-        return res.json({token})
+        return res.json({ user: newUser })
     }
 
-    async login(req, res, next){
-        const {email, password} = req.body
-        const user = await User.findOne({where: {email}})
-        if(!user){ 
-            return next(ApiError.internal('Користувач не знайдений'))
+    async getUserFromDatabase(req, res, next){
+        const {uid} = req.body
+
+        if(!uid){
+            // return next(ApiError.badRequest('Bad uid'))
+            return null;
         }
-        let comparePassword = bcrypt.compareSync(password, user.password)
-        if(!comparePassword){
-            return next(ApiError.internal('Паролі не збігаються'))
+
+        const currentUser = await User.findOne({where: {uid}})
+
+        if(!currentUser){ 
+            return next(ApiError.internal('User not found'))
         }
-        const token = generateJwt(user.id, user.email, user.role)
-        return res.json({token})
+
+        return res.json({ user: currentUser})
     }
 
     async checkAuth(req, res, next){

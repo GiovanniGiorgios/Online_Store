@@ -3,8 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AppRouter from "./components/Routers/AppRouter";
 import { observer } from "mobx-react-lite";
 import { UserStoreContext } from ".";
-import { check } from "./http/userApi";
-import Spinner from 'react-bootstrap/Spinner';
+import { CircularProgress, Grid } from "@mui/material"; // Змінено імпорт на Material UI
 import { useMediaQuery } from "@mui/material";
 
 import NavBar from "./components/NavBar/NavBar";
@@ -19,26 +18,19 @@ import AdminPanel from "./pages/AdminPanel";
 const App = observer(() => {
   const [theme, colorMode] = useMode();
 
-  // const themee = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("leftBar"));
-
   const user = useContext(UserStoreContext)
-  // для загрузки, Логіка(крутилка загрузки потім відправляєтсья запрос на 
-  //провірку користувача, коли повернулася відповідь робим false)
-  const [loading, setLoading] = useState(true)
 
-  //треба відправлять тількі один раз при відкриті для цього useEffect()
   useEffect(() => {
-    check().then(data =>{
-      user.setUser(data)
-      user.setIsAuth(true)
-      localStorage.setItem('role', data.role)
-    }).finally(() => setLoading(false))
-  }, [])
+    user.checkAuth();
+  }, [user])
 
-  if(loading){
-    return <Spinner animation={"grow"}/>
-  }
+  // if (!user.isLoading) {
+  //   return (
+  //     <Grid container justifyContent="center" alignItems="center" style={{ height: "100vh" }}>
+  //       <CircularProgress />
+  //     </Grid>
+  //   );
+  // }
 
   return (
     <BrowserRouter>
