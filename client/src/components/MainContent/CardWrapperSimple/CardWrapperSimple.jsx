@@ -17,7 +17,7 @@ const CardWrapperSimple = ({item}) => {
     <Card sx={{ width: "19%", padding: "16px", border: "1px solid", borderColor: "cardWrapper.border" }}>
       <CardMedia
         component="img"
-        // height="194"
+        // height="194" 
         height="auto"
         image={img5}
         sx={{objectFit: "contain"}}

@@ -7,17 +7,19 @@ import AdminSideBar from "../components/AdminContent/AdminSideBar/AdminSideBar";
 import { Box } from "@mui/material";
 
 const AdminPanel = () => {
-
+    
     return (
         <div className="app">
             <main className="content">
                 <Box sx={{display: "flex", flexDirection: "row", width: "100%"}}>
 
-                    <Box sx={{width: "250px"}}>
+                    {/* <Box sx={{width: "250px"}}> */}
+                    <Box>
                         <AdminSideBar />
                     </Box>
 
-                    <Box sx={{width: "calc(100% - 250px)"}}>
+                    {/* <Box sx={{width: "calc(100% - 250px)"}}> */}
+                    <Box sx={{padding: "0 20px"}}>
                         <AdminRouter />
                     </Box>                    
                 </Box>

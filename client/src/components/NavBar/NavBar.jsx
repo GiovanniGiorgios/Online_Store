@@ -19,7 +19,8 @@ import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 
 import MyDrawer from './MyDrawer/MyDrawer';
-import { Link } from 'react-router-dom';
+
+import { useNavigate } from "react-router-dom";
 
 // color mode
 import Brightness4Icon from '@mui/icons-material/Brightness4';
@@ -27,9 +28,9 @@ import Brightness7Icon from '@mui/icons-material/Brightness7';
 import { ColorModeContext } from '../../theme';
 import { useTheme } from '@emotion/react';
 
-import { LOGIN_ROUTE } from '../../utils/consts';
+import { USERPROFILE_ROUTE, MAIN_ROUTE } from '../../utils/consts';
 import AuthPopup from '../Popups/AuthPopup/AuthPopup';
-
+import { UserStoreContext } from '../..';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -72,31 +73,27 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function PrimarySearchAppBar() {
-  // color mode
+  const user = useContext(UserStoreContext);
+  const navigate = useNavigate();
+
   const colorMode = useContext(ColorModeContext);
   const theme = useTheme();
 
-  
-  const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-
-  const isMenuOpen = Boolean(anchorEl);
 
   const [isAuthPopupOpen, setIsAuthPopupOpen] = useState(false);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
   const handleProfileMenuOpen = (event) => {
-    // setAnchorEl(event.currentTarget);
-    setIsAuthPopupOpen(true);
+    if(user.isAuth) {
+      navigate(USERPROFILE_ROUTE);
+    } else{
+      setIsAuthPopupOpen(true);
+    }
   };
 
   const handleMobileMenuClose = () => {
     setMobileMoreAnchorEl(null);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    handleMobileMenuClose();
   };
 
   const handleMobileMenuOpen = (event) => {
@@ -108,27 +105,6 @@ export default function PrimarySearchAppBar() {
   };
 
   const menuId = 'primary-search-account-menu';
-  const renderMenu = (
-    // <Menu
-    //   anchorEl={anchorEl}
-    //   anchorOrigin={{
-    //     vertical: 'top',
-    //     horizontal: 'right',
-    //   }}
-    //   id={menuId}
-    //   keepMounted
-    //   transformOrigin={{
-    //     vertical: 'top',
-    //     horizontal: 'right',
-    //   }}
-    //   open={isMenuOpen}
-    //   onClose={handleMenuClose}
-    // >
-    //   <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-    //   <MenuItem onClick={handleMenuClose} component={Link} to={LOGIN_ROUTE} >My account</MenuItem>
-    // </Menu>
-    <AuthPopup open={isAuthPopupOpen} setOpen={handleAuthPopupClose} />
-  );
 
   const mobileMenuId = 'primary-search-account-menu-mobile';
   const renderMobileMenu = (
@@ -189,7 +165,6 @@ export default function PrimarySearchAppBar() {
   };
 
   return (
-    // <Box sx={{ flexGrow: 1}}>
     <Box sx={{ zIndex: 1000, position: "sticky", top: 0}}>
       <AppBar position="static" sx={(theme) => ({ backdropFilter: "saturate(180%) blur(20px)", backgroundColor: alpha(theme.palette.primary.main, 0.7) })}>
         <Toolbar>
@@ -208,19 +183,23 @@ export default function PrimarySearchAppBar() {
             <MyDrawer toggleDrawer={toggleDrawer}  />
           </Drawer>
           
-          
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ display: { xs: 'none', sm: 'block' } }}
+          <IconButton 
+            disableRipple 
+            size="large" 
+            color="inherit"
+            onClick={() => navigate(MAIN_ROUTE)}
           >
-            LuxeLane
-          </Typography>
-
+            <Typography
+              variant="h6"
+              noWrap
+              component="div"
+              sx={{ display: { xs: 'none', sm: 'block' } }}
+            >
+              LuxeLane
+            </Typography>
+          </IconButton>
 
           <CatalogMenuModal />
-
 
           <Search>
             <SearchIconWrapper>
@@ -281,7 +260,8 @@ export default function PrimarySearchAppBar() {
         </Toolbar>
       </AppBar>
       {renderMobileMenu}
-      {renderMenu}
+
+      <AuthPopup open={isAuthPopupOpen} setOpen={handleAuthPopupClose} /> 
     </Box>
   );
 }

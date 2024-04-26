@@ -13,9 +13,8 @@ const User = sequelize.define("user", {
     email: {type: DataTypes.STRING, unique: true, allowNull: false},
     emailVerified: { type: DataTypes.BOOLEAN },
     role: {type: DataTypes.STRING, defaultValue: "USER", allowNull: false},
-    displayName: {type: DataTypes.STRING},
-    // birthDate: {type: DataTypes.DATE},
-    // photoURL: { type: String }, // URL фото користувача
+    name: {type: DataTypes.STRING},
+    photoURL: { type: DataTypes.STRING },
     phoneNumber: {type: DataTypes.INTEGER},
 })
 
@@ -92,6 +91,7 @@ const ProductInfo = sequelize.define('product_info', {
 const Category = sequelize.define('category', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     name: {type: DataTypes.STRING, unique: true, allowNull: false},
+    // imageId: {type: DataTypes.INTEGER, allowNull: true},
 })
 const SubCategory = sequelize.define('subCategory', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
@@ -111,19 +111,55 @@ const Brand = sequelize.define('brand', {
 // IMAGES
 const Image = sequelize.define('image', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    imgName: {type: DataTypes.STRING, allowNull: false},
     imgSrc: {type: DataTypes.STRING, allowNull: false},
+    imageableType: {type: DataTypes.STRING}, //type img
+    // imageableId: {type: DataTypes.INTEGER}, //id img
 })
 
 
 // additional tables
-const TypeBrand = sequelize.define('type_brand', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-})
+// const TypeBrand = sequelize.define('type_brand', {
+//     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+//     typeId: {type: DataTypes.INTEGER, allowNull: false},
+//     brandId: {type: DataTypes.INTEGER, allowNull: false}
+// });
+
 const ProductSubCategory = sequelize.define('product_subCategory', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    productId: {type: DataTypes.INTEGER},
+    subCategoryId: {type: DataTypes.INTEGER},
 })
 const ProductCategory = sequelize.define('product_category', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    productId: {type: DataTypes.INTEGER},
+    categoryId: {type: DataTypes.INTEGER},
+})
+const CategoryImage = sequelize.define('category_image', {
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    categoryId: {type: DataTypes.INTEGER},
+    imageId: {type: DataTypes.INTEGER},
+})
+const SubCategoryImage = sequelize.define('subCategory_image', {
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    subCategoryId: {type: DataTypes.INTEGER},
+    imageId: {type: DataTypes.INTEGER},
+})
+
+const ProductImage = sequelize.define('product_image', {
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    productId: {type: DataTypes.INTEGER},
+    imageId: {type: DataTypes.INTEGER},
+})
+const ProductBrand = sequelize.define('product_brand', {
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    productId: {type: DataTypes.INTEGER},
+    brandId: {type: DataTypes.INTEGER},
+})
+const ProductType = sequelize.define('product_type', {
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    productId: {type: DataTypes.INTEGER},
+    typeId: {type: DataTypes.INTEGER},
 })
 
 
@@ -169,9 +205,6 @@ Review.belongsTo(User, {foreignKey: 'userId'});
 Product.hasMany(Review, {foreignKey: 'productId'});
 Review.belongsTo(Product, {foreignKey: 'productId'});
 
-Review.hasMany(Image, {foreignKey: 'reviewId'});
-Image.belongsTo(Review, {foreignKey: 'reviewId'});
-
 // DISCOUNTS
 User.hasMany(DiscountCard, {foreignKey: 'userId'});
 DiscountCard.belongsTo(User, {foreignKey: 'userId'});
@@ -186,27 +219,33 @@ DiscountCardForProduct.belongsTo(Product, {foreignKey: 'productId'});
 Product.hasMany(Discount, {foreignKey: 'productId'});
 Discount.belongsTo(Product, {foreignKey: 'productId'});
 
-Product.belongsTo(Type, {foreignKey: 'typeId'});
-Type.hasMany(Product, {foreignKey: 'typeId'});
+Product.belongsToMany(Image, { through: ProductImage });
+Image.belongsToMany(Product, { through: ProductImage });
 
-Product.belongsTo(Brand, {foreignKey: 'brandId'});
-Brand.hasMany(Product, {foreignKey: 'brandId'});
+Product.belongsToMany(Brand, { through: ProductBrand }); //through - назва проміжної таблиці, створюєтсья автоматично
+Brand.belongsToMany(Product, { through: ProductBrand });
 
-Type.belongsToMany(Brand, {through: TypeBrand, foreignKey: 'typeId'});
-Brand.belongsToMany(Type, {through: TypeBrand, foreignKey: 'brandId'});
+Product.belongsToMany(Type, { through: ProductType });
+Type.belongsToMany(Product, { through: ProductType });
 
 // categories
-Product.belongsToMany(SubCategory, {through: ProductSubCategory, foreignKey: 'productId'});
-SubCategory.belongsToMany(Product, {through: ProductSubCategory, foreignKey: 'subCategoryId'});
+Product.belongsToMany(SubCategory, {through: ProductSubCategory});
+SubCategory.belongsToMany(Product, {through: ProductSubCategory});
 
-Product.belongsToMany(Category, {through: ProductCategory, foreignKey: 'productId'});
-Category.belongsToMany(Product, {through: ProductCategory, foreignKey: 'CategoryId'});
+Product.belongsToMany(Category, {through: ProductCategory});
+Category.belongsToMany(Product, {through: ProductCategory});
 
 Category.hasMany(SubCategory, {foreignKey: 'categoryId'});
 SubCategory.belongsTo(Category, {foreignKey: 'categoryId'});
+
+
 // img
-Product.hasMany(Image, {foreignKey: 'productId'});
-Image.belongsTo(Product, {foreignKey: 'productId'});
+Category.belongsToMany(Image, { through: CategoryImage });
+Image.belongsToMany(Category, { through: CategoryImage });
+
+SubCategory.belongsToMany(Image, { through: SubCategoryImage });
+Image.belongsToMany(SubCategory, { through: SubCategoryImage });
+
 // product info
 Product.hasMany(ProductInfo, {foreignKey: 'productId'});
 ProductInfo.belongsTo(Product, {foreignKey: 'productId'});
@@ -231,4 +270,11 @@ module.exports = {
     Type,
     Brand,
     Image,
+    CategoryImage,
+    SubCategoryImage,
+    ProductImage,
+    ProductCategory,
+    ProductSubCategory,
+    ProductType,
+    ProductBrand,
 }

@@ -46,7 +46,7 @@ const AuthPopup = ({open, setOpen}) => {
             const userFireBase = await handleAuthGoogle();
 
             if (userFireBase) {
-                await user.getUserFromDB(userFireBase.email, userFireBase.uid);
+                await user.getUserFromDB(userFireBase.email, userFireBase.token, userFireBase.userData);
                 handleClose();
             } else {
                 console.log('No user data from Firebase');
@@ -62,7 +62,7 @@ const AuthPopup = ({open, setOpen}) => {
             const userFireBase = await handleAuthGitHub();
 
             if (userFireBase) {
-                await user.getUserFromDB(userFireBase.email, userFireBase.uid);
+                await user.getUserFromDB(userFireBase.email, userFireBase.uid, userFireBase.userData);
                 handleClose();
             } else {
                 console.log('No user data from Firebase');

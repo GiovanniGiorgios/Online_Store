@@ -1,12 +1,17 @@
 const Router = require('express')
 const router = new Router() 
+
 const typeController = require('../controllers/typeController')
-const checkRole = require('../middleware/checkRoleMiddleware')
 
-// методи для type
-router.post('/', checkRole('ADMIN'), typeController.create) //метод для створення 
-router.get('/', typeController.getAll) //метод для отримування
-//ще треба метод delete доработать треба мамому 
+const checkVerifyAdminMiddleware = require('../middleware/checkVerifyAdminMiddleware')
 
+router.get('/fetchTypes', typeController.getAll);
+
+router.post('/getCategoryTypes', typeController.getCategoryTypes);
+
+router.post('/addNewType', checkVerifyAdminMiddleware, typeController.create);
+router.delete('/deleteType/:id', checkVerifyAdminMiddleware, typeController.delete);
+router.put('/updateType/:id', checkVerifyAdminMiddleware, typeController.update);
+
+    
 module.exports = router
-

@@ -1,4 +1,5 @@
 {
+  "homepage": "https://maxsaiets.github.io/LuxeLane_client",
   "name": "client",
   "version": "0.1.0",
   "private": true,
@@ -25,6 +26,9 @@
     "react-bootstrap": "^2.8.0",
     "react-dom": "^18.2.0",
     "react-icons": "^5.0.1",
+    "react-lazy-load-image-component": "^1.6.0",
+    "react-lazyload": "^3.2.1",
+    "react-material-ui-carousel": "^3.4.2",
     "react-pro-sidebar": "^1.1.0",
     "react-router-dom": "^6.16.0",
     "react-scripts": "5.0.1",
@@ -35,6 +39,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -56,5 +62,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "gh-pages": "^6.1.1"
   }
 }

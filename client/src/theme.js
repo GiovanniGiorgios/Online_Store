@@ -18,8 +18,7 @@ export const themeSettings = (mode) => {
                   main: "#e1e1e1"
                 },
                 text: {
-                  main: "#fff",
-                  black: "#000"
+                  main: "#000",
                 },
                 cardWrapper: {
                   border: "#a09f9f"
@@ -33,6 +32,10 @@ export const themeSettings = (mode) => {
                 primary: {
                   main: "#4a4a4a"
                 },
+                text: { 
+                  main: "#fff"
+                },
+
             }),
         },
         breakpoints: {

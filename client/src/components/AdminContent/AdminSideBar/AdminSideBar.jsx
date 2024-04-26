@@ -1,7 +1,12 @@
-import { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Box, Divider, IconButton, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import { Menu, MenuItem, Sidebar } from 'react-pro-sidebar';
+
+import { UserStoreContext } from "../../../index";
+
+import { Link as MuiLink } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
 
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
@@ -15,12 +20,13 @@ import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutl
 import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
-import { ADMIN_ALLUSERS_ROUTE } from "../../../utils/consts";
+
+import { ADMIN_ALLUSERS_ROUTE, ADMIN_CATEGORIES_ROUTE, ADMIN_BRANDS_ROUTE, ADMIN_TYPES_ROUTE, ADMIN_PRODUCTS_ROUTE } from "../../../utils/consts";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
 
     return (
-        <Link to={to}>
+          <MuiLink component={RouterLink} underline='none' color="#000000" to={to}>
             <MenuItem
                 active={selected === title}
                 onClick={() => setSelected(title)}
@@ -28,11 +34,13 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
             >
                 <Typography>{title}</Typography>
             </MenuItem>
-        </Link>
+        </MuiLink>
     );
 };
 
 const AdminSideBar = () => {
+  const userStore = useContext(UserStoreContext);
+
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
 
@@ -56,7 +64,7 @@ const AdminSideBar = () => {
                 ml="15px"
               >
                 <Typography variant="h5">
-                  ADMINS
+                  ADMIN PANEL
                 </Typography>
                 <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
                   <MenuOutlinedIcon />
@@ -72,7 +80,7 @@ const AdminSideBar = () => {
                   alt="profile-user"
                   width="100px"
                   height="100px"
-                  src={`../../assets/user.png`}
+                  src={userStore.user.photoURL}
                   style={{ cursor: "pointer", borderRadius: "50%" }}
                 />
               </Box>
@@ -82,10 +90,10 @@ const AdminSideBar = () => {
                   fontWeight="bold"
                   sx={{ m: "10px 0 0 0" }}
                 >
-                  Ed Roh
+                  {userStore.user.name}
                 </Typography>
                 <Typography variant="h5">
-                  VP Fancy Admin
+                  {userStore.user.email}
                 </Typography>
               </Box>
             </Box>
@@ -103,7 +111,7 @@ const AdminSideBar = () => {
             <Divider />
 
             <Typography
-              variant="h6"
+              variant="h5"
               sx={{ m: "15px 0 5px 20px" }}
             >
               Data
@@ -153,15 +161,72 @@ const AdminSideBar = () => {
               setSelected={setSelected}
             />
             <Item
-              title="All UsersTEST"
+              title="All Users"
               to={ADMIN_ALLUSERS_ROUTE}
               icon={<PeopleOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
-            <Link to={ADMIN_ALLUSERS_ROUTE}>ADMIN_ALLUSERS_ROUTE</Link>
 
+            <Divider />
+            <Typography
+              variant="h6"
+              sx={{ m: "15px 0 5px 20px" }}
+            >
+              Products
+            </Typography>
+            <Item
+              title="Products"
+              to={ADMIN_PRODUCTS_ROUTE}
+              icon={<PeopleOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
 
+            <Divider />
+            <Typography
+              variant="h6"
+              sx={{ m: "15px 0 5px 20px" }}
+            >
+              Categories
+            </Typography>
+            <Item
+              title="Categories"
+              to={ADMIN_CATEGORIES_ROUTE}
+              icon={<PeopleOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+
+            <Divider />
+            <Typography
+              variant="h6"
+              sx={{ m: "15px 0 5px 20px" }}
+            >
+              Brands
+            </Typography>
+            <Item
+              title="Brands"
+              to={ADMIN_BRANDS_ROUTE}
+              icon={<PeopleOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+
+            <Divider />
+            <Typography
+              variant="h6"
+              sx={{ m: "15px 0 5px 20px" }}
+            >
+              Types
+            </Typography>
+            <Item
+              title="Types"
+              to={ADMIN_TYPES_ROUTE}
+              icon={<PeopleOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
             <Divider />
 
             <Typography

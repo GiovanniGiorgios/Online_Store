@@ -1,9 +1,8 @@
-import { $authHost } from "./index";
+import { $adminHost } from "./index";
 
 export const fetchAllUsers = async () => {
-    console.log("fetchAllUsers");
     try {
-        const response = await $authHost.get('api/usersInfo/allUsers');
+        const response = await $adminHost.get('api/usersInfo/allUsers');
         return response.data;
     } catch (error) {
         console.error("Error fetching users: ", error);

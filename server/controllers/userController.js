@@ -5,6 +5,8 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const { User, Basket} = require('../models/models')
 
+const admin = require('firebase-admin');
+
 const generateJwt = (id, email, role) => {
     return jwt.sign(
         {id, email, role}, 
@@ -14,39 +16,56 @@ const generateJwt = (id, email, role) => {
 }
 
 class UserController {
-    async getOrsaveNewUserInDatabase(req, res){
-        const {email, uid} = req.body
+    // Function to get or create a new user in the database
+    async getOrsaveNewUserInDatabase(req, res, next) {
+        const { email, token, userData } = req.body;
 
-        if(!email || !uid){
-            return next(ApiError.badRequest('Bad email or uid'))
+        if (!email || !token) {
+            return next(ApiError.badRequest('Invalid email or token'));
         }
 
-        const currentUser = await User.findOne({where: {uid}})
-        if(currentUser){
-            return res.json({ user: currentUser })
+        try {
+            const decodedToken = await admin.auth().verifyIdToken(token);
+            const uid = decodedToken.uid;
+
+            let user = await User.findOne({ where: { uid } });
+
+            if (!user) {
+                user = await User.create({ email, role: "USER", uid, name: userData.name, photoURL: userData.photoURL });
+            }
+
+            return res.json({ user });
+        } catch (error) {
+            console.log("ERROR with getOrsaveNewUserInDatabase", error);
+            return next(ApiError.internal('Error while verifying the token'));
         }
-
-        const newUser = await User.create({email, role: "ADMIN", uid})
-
-        // const basket = await Basket.create({userId: user.id})
-        return res.json({ user: newUser })
     }
 
-    async getUserFromDatabase(req, res, next){
-        const {uid} = req.body
-
-        if(!uid){
-            // return next(ApiError.badRequest('Bad uid'))
-            return null;
+   // Function to get a user from the database
+    async getUserFromDatabase(req, res, next) {
+        const bearerHeader = req.headers.authorization;
+        if (!bearerHeader) {
+            return next(ApiError.badRequest('Token not provided'));
         }
 
-        const currentUser = await User.findOne({where: {uid}})
+        const bearer = bearerHeader.split(' ');
+        const token = bearer[1];
 
-        if(!currentUser){ 
-            return next(ApiError.internal('User not found'))
+        try {
+            const decodedToken = await admin.auth().verifyIdToken(token);
+
+            const uid = decodedToken.uid;
+
+            const user = await User.findOne({ where: { uid } });
+
+            if (!user) { 
+                return next(ApiError.internal('User not found'));
+            }
+            return res.json({ user });
+        } catch (error) {
+            console.log("ERROR with getUserFromDatabase", error);
+            return next(ApiError.internal('Error while verifying the token'));
         }
-
-        return res.json({ user: currentUser})
     }
 
     async checkAuth(req, res, next){

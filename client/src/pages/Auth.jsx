@@ -10,7 +10,6 @@ import { UserStoreContext } from "..";
 const Auth = observer(() => {
     const user = useContext(UserStoreContext);
     
-    const navigate = useNavigate()
     const location = useLocation() // дозволяє отримати маршрут в запросе
     const isLogin = location.pathname === LOGIN_ROUTE
 

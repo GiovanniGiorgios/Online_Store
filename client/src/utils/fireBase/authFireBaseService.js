@@ -15,9 +15,15 @@ export const registerUserWithEmailAndPassFireBase = async (email, password) => {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const userFireBase = userCredential.user;
 
+            const token = await userFireBase.getIdToken();
+
             return {
+                userData: {
+                    name: userFireBase.displayName,
+                    photoURL: userFireBase.photoURL,
+                },
                 email: userFireBase.email,
-                uid: userFireBase.uid,
+                token: token,
             };
         }
     } catch (error) {
@@ -39,9 +45,15 @@ export const loginUserWithEmailAndPassFireBase = async (email, password) => {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const userFireBase = userCredential.user;
 
+            const token = await userFireBase.getIdToken();
+
             return {
+                userData: {
+                    name: userFireBase.displayName,
+                    photoURL: userFireBase.photoURL,
+                },
                 email: userFireBase.email,
-                uid: userFireBase.uid,
+                token: token,
             };
         }
     } catch (error) {
@@ -56,8 +68,9 @@ export const handleAuthGoogle = async () => {
         const provider = new GoogleAuthProvider();
 
         const result = await signInWithPopup(auth, provider);
-        const user = result.user;
-        const email = user.email;
+
+        const userFireBase = result.user;
+        const email = userFireBase.email;
 
         const methods = await fetchSignInMethodsForEmail(auth, email);
 
@@ -66,9 +79,15 @@ export const handleAuthGoogle = async () => {
             throw new Error(message);
         }
 
+        const token = await userFireBase.getIdToken();
+
         return {
-            email: user.email,
-            uid: user.uid,
+            userData: {
+                name: userFireBase.displayName,
+                photoURL: userFireBase.photoURL,
+            },
+            email: userFireBase.email,
+            token: token,
         };
     } catch (error) {
         throw error;
@@ -81,8 +100,8 @@ export const handleAuthGitHub = async () => {
         const provider = new GithubAuthProvider();
 
         const result = await signInWithPopup(auth, provider);
-        const user = result.user;
-        const email = user.email;
+        const userFireBase = result.user;
+        const email = userFireBase.email;
 
         const methods = await fetchSignInMethodsForEmail(auth, email);
 
@@ -90,10 +109,15 @@ export const handleAuthGitHub = async () => {
             const message = "Ви вже зареєстровані з іншими обліковими даними. Будь ласка, увійдіть за допомогою вже існуючого методу входу або об'єднайте ваші облікові записи.";
             throw new Error(message);
         }
+        const token = await userFireBase.getIdToken();
 
         return {
-            email: user.email,
-            uid: user.uid,
+            userData: {
+                name: userFireBase.displayName,
+                photoURL: userFireBase.photoURL,
+            },
+            email: userFireBase.email,
+            token: token,
         };
     } catch (error) {
         throw error;
@@ -117,4 +141,3 @@ export const checkAuth = async (user) => {
         throw error;
     }
 };
-

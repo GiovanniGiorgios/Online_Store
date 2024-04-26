@@ -19,10 +19,15 @@ export default class UserStore {
         this._isAuth = bool  
     }
     setUser(user){
-        this._user = user 
+        if (user) {
+            this._user = user;
+            localStorage.setItem("role", user.role);
+        } else {
+            this._user = {};
+            localStorage.removeItem("role");
+        }
     }
     setLoading(bool){
-        console.log("setloading", bool)
         this._isLoading = bool  
     }
     // get (викликається тількі тоді коли змінна яка була всередині зміниться)
@@ -40,7 +45,9 @@ export default class UserStore {
         try {
             const userFireBase = await loginUserWithEmailAndPassFireBase(email, password);
 
-            const response = await getUserFromDatabase(userFireBase.uid);
+            localStorage.setItem('token', userFireBase.token);
+
+            const response = await getUserFromDatabase(userFireBase.token);
 
             this.setUser(response.user);
             this.setIsAuth(true);
@@ -52,17 +59,19 @@ export default class UserStore {
         try {
             const userFireBase = await registerUserWithEmailAndPassFireBase(email, password);
 
-            const response = await this.getUserFromDB(userFireBase.email, userFireBase.uid);
+            localStorage.setItem('token', userFireBase.token);
+
+            const response = await this.getUserFromDB(userFireBase.email, userFireBase.token);
         } catch (error){
             throw error;
         }
     } 
 
-    async getUserFromDB(email, uid){
+    async getUserFromDB(email, token, userData){
         try {
-            const response = await getOrsaveUserInDatabase(email, uid);
+            const response = await getOrsaveUserInDatabase(email, token, userData);
 
-            this.setUser(response.user);
+            this.setUser( response.user);
             this.setIsAuth(true);
         } catch (error){
             throw error
@@ -78,6 +87,7 @@ export default class UserStore {
                 console.log(error.message)
             });
 
+            localStorage.removeItem('token');
             this.setIsAuth(false);
             this.setUser({});
         } catch (e) {
@@ -95,9 +105,13 @@ export default class UserStore {
                     resolve(user);
                 }, reject);
             });
-    
+
             if (userFireBase) {
-                const response = await getUserFromDatabase(userFireBase.uid);
+                const token = await userFireBase.getIdToken();
+
+                localStorage.setItem('token', token)
+
+                const response = await getUserFromDatabase();
     
                 if(response != null){
                     this.setUser(response.user);

@@ -2,8 +2,8 @@ import React, { useContext, useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AppRouter from "./components/Routers/AppRouter";
 import { observer } from "mobx-react-lite";
-import { UserStoreContext } from ".";
-import { CircularProgress, Grid } from "@mui/material"; // Змінено імпорт на Material UI
+import { UserStoreContext, CatalogStoreContext } from ".";
+import { CircularProgress, Grid } from "@mui/material";
 import { useMediaQuery } from "@mui/material";
 
 import NavBar from "./components/NavBar/NavBar";
@@ -19,10 +19,25 @@ const App = observer(() => {
   const [theme, colorMode] = useMode();
 
   const user = useContext(UserStoreContext)
+  const catalog = useContext(CatalogStoreContext);
+  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
-    user.checkAuth();
-  }, [user])
+
+    catalog.getCatalogCategories();
+    catalog.getCatalogSubCategories();
+
+    const checkAuth = async () => {
+      await user.checkAuth();
+      setAuthChecked(true);
+    };
+
+    if (!user.isLoading) {
+      checkAuth();
+    } else {
+      setAuthChecked(true);
+    }
+  }, [user]);
 
   // if (!user.isLoading) {
   //   return (
